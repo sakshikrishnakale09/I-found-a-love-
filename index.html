@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Our Constellation 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0; padding: 0;
+      width: 100vw; height: 100vh;
+      font-family: 'Segoe Script', 'Comic Sans MS', cursive, sans-serif;
+      background: #fffafc;
+      overflow-x: hidden;
+    }
+    .page {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      width: 100vw;
+      position: absolute;
+      top: 0; left: 0;
+      background: linear-gradient(135deg, #ffe3f3 0%, #ffd6e0 100%);
+      z-index: 1;
+      transition: opacity 1s;
+    }
+    .active { display: flex; z-index: 10; opacity: 1;}
+    .love-btn {
+      margin: 32px 0 0 0;
+      padding: 18px 36px;
+      background: #fff0f6;
+      border: none;
+      border-radius: 30px;
+      font-size: 1.25em;
+      color: #fa4c8c;
+      font-weight: bold;
+      box-shadow: 0 4px 20px #fa4c8c55;
+      cursor: pointer;
+      transition: transform 0.18s, background 0.25s;
+      outline: none;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 8px #fa4c8c44;
+      font-family: inherit;
+    }
+    .love-btn:hover { background: #ffeaf4; transform: scale(1.07) rotate(-2deg);}
+    .heart { width: 85px; margin-bottom: 18px; animation: pulse 1.3s infinite; display: block; filter: drop-shadow(0 0 18px #fa4c8c77);}
+    @keyframes pulse {0%,100% { transform: scale(1);} 55% { transform: scale(1.15);}}
+    .msg {
+      color: #b32d5e;
+      font-size: 1.2em;
+      margin-bottom: 24px;
+      margin-top: 0;
+      line-height: 1.5;
+      letter-spacing: 0.04em;
+      text-align: center;
+      max-width: 370px;
+      background: rgba(255,255,255,0.4);
+      padding: 13px 26px 13px 26px;
+      border-radius: 16px;
+      box-shadow: 0 2px 10px #fa4c8c19;
+    }
+    /* Falling petals and photos */
+    .petal, .fall-photo, .fall-heart {
+      position: fixed;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.8;
+      will-change: transform, opacity;
+      user-select: none;
+    }
+    .petal { width: 32px; height: 32px; }
+    .fall-photo {
+      width: 70px; height: 70px; border-radius: 22px; box-shadow: 0 3px 20px #fa4c8c33;
+      border: 3px solid #fff;
+      background: #fff0f8;
+      object-fit: cover;
+      transition: box-shadow 0.2s;
+      cursor: pointer;
+      z-index: 220;
+    }
+    .fall-heart {
+      font-size: 2.2em;
+      pointer-events: none;
+      filter: drop-shadow(0 1px 12px #ff7fbf80);
+    }
+    /* Scrapbook collage */
+    .scrapbook { display: flex; flex-wrap: wrap; gap: 28px 19px; margin: 32px auto 0 auto; justify-content: center; max-width: 90vw; }
+    .scrap-pic {
+      width: 112px; height: 112px; border-radius: 18px; box-shadow: 0 2px 13px #fa4c8c2c; object-fit: cover;
+      cursor: pointer; border: 2.5px solid #fff; background: #fff8fb; position: relative;
+      transition: box-shadow 0.38s, transform 0.45s;
+      opacity: 0;
+      animation: fadeInScrap 1.1s forwards;
+    }
+    @keyframes fadeInScrap { to{opacity:1;}}
+    .scrap-pic:hover { box-shadow: 0 0 28px #ffb5e1, 0 2px 14px #ffb6d5bb; transform: scale(1.06) rotate(-2deg);}
+    .scrap-caption {
+      position: absolute; left: 0; right: 0; top: 100%; margin: 0 auto; padding: 8px 4px 3px 4px;
+      color: #fa4c8c; background: #fff7f7; border-radius: 0 0 12px 12px;
+      box-shadow: 0 1px 8px #fa4c8c11; font-size: 1em; font-family: inherit;
+      opacity: 0; pointer-events: none; z-index: 12; transition: opacity 0.4s;
+      width: 100%; text-align: center;
+    }
+    .scrap-pic.show-caption .scrap-caption { opacity: 1; pointer-events: all;}
+
+    /* Carousel */
+    .carousel-wrap { width: 340px; max-width: 98vw; margin: 0 auto 22px auto; position: relative; }
+    .carousel { display: flex; align-items: center; justify-content: center; position: relative; }
+    .carousel-pic {
+      width: 165px; height: 165px; border-radius: 24px; object-fit: cover; background: #fff7fb;
+      box-shadow: 0 8px 32px #fa4c8c44, 0 4px 20px #ffbadc77;
+      border: 3px solid #fff;
+      filter: drop-shadow(0 0 12px #ffc0e6);
+      transition: box-shadow 0.5s, transform 0.5s, filter 0.4s;
+      opacity: 1;
+    }
+    .carousel-arrow {
+      background: #fff0f6; color: #fa4c8c; font-size: 2.6em; border: none; border-radius: 50%;
+      width: 45px; height: 45px; margin: 0 15px; box-shadow: 0 2px 10px #fa4c8c22; cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+      outline: none; display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 10;
+    }
+    .carousel-arrow:active { background: #ffeaf4; color: #b32d5e; transform: scale(1.14);}
+    .carousel-caption { text-align: center; color: #fa4c8c; font-weight: 500; font-size: 1.05em; letter-spacing: 0.03em; margin: 10px 0 0 0;}
+    .carousel-bg {
+      position: absolute; left: 0; top: 0; width: 100%; height: 100%; z-index: 0; background: radial-gradient(ellipse at center, #fff4fd 0%, #ffd6e0 100%);
+      pointer-events: none;
+      filter: blur(16px) opacity(0.9);
+    }
+    /* Constellation page */
+    #constellation-canvas { width: 360px; height: 340px; background: transparent; pointer-events: none; display: block; margin: 18px auto 0 auto;}
+    .constellation-msg {
+      margin: 20px 0 0 0; color: #fa4c8c; font-size: 1.1em; font-weight: 500; text-align: center; max-width: 350px; background: #fff0f6bb; border-radius: 1em; padding: 10px 16px;
+      box-shadow: 0 2px 10px #fa4c8c22;
+    }
+    .footer { margin-top: 18px; color: #fa4c8c; font-size: 1.17em; font-weight: 600; text-shadow: 0 2px 10px #fa4c8c1a; letter-spacing: 0.05em;}
+    @media (max-width: 600px) {
+      .carousel-wrap { width: 99vw; }
+      .carousel-pic { width: 90vw; height: 36vw; min-width: 142px; min-height: 142px; }
+      #constellation-canvas { width: 96vw; height: 46vw; min-height: 180px; }
+      .scrap-pic { width: 70px; height: 70px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Page 1: Welcome -->
+  <div class="page active" id="page1">
+    <svg class="heart" viewBox="0 0 32 29.6"><path fill="#fa4c8c" d="M23.6,0c-2.9,0-5.4,1.6-6.6,4C11.8,1.6,9.3,0,6.4,0C2.6,0,0,2.9,0,6.9c0,7.3,13.2,16.1,15,17.2c1.8-1.1,15-9.9,15-17.2C32,2.9,29.4,0,25.6,0z"/></svg>
+    <h1>Our Constellation 💖</h1>
+    <div class="msg">
+      Welcome to a universe made of our memories.<br>
+      Every moment, every smile, is a star in our sky.
+    </div>
+    <button class="love-btn" onclick="nextPage(2)">Begin the Journey</button>
+    <audio id="mainAudio" src="https://files.catbox.moe/vuk5es.mp3" preload="auto" loop></audio>
+  </div>
+  <!-- Page 2: Photo Rain -->
+  <div class="page" id="page2">
+    <div class="msg">
+      Look! Our memories are raining from the sky.<br>
+      Tap a photo before it lands to catch a heart!
+    </div>
+    <button class="love-btn" onclick="nextPage(3)" style="z-index:500;">Next</button>
+  </div>
+  <!-- Page 3: Scrapbook Collage -->
+  <div class="page" id="page3">
+    <div class="msg">Our scrapbook of shared giggles, adventures, and love.<br>
+      <span style="color:#fa4c8c; font-weight:600;">Click a photo for a surprise!</span>
+    </div>
+    <div class="scrapbook" id="scrapbook"></div>
+    <button class="love-btn" onclick="nextPage(4)">Next</button>
+  </div>
+  <!-- Page 4: Polaroid Carousel -->
+  <div class="page" id="page4">
+    <div class="carousel-bg"></div>
+    <h2 style="color:#fa4c8c;margin-bottom:0.08em;">Moments in Motion 📸</h2>
+    <div class="carousel-wrap">
+      <div class="carousel">
+        <button class="carousel-arrow" id="carouselPrev">&#8592;</button>
+        <img id="carouselPic" class="carousel-pic" src="" alt="">
+        <button class="carousel-arrow" id="carouselNext">&#8594;</button>
+      </div>
+      <div class="carousel-caption" id="carouselCaption"></div>
+    </div>
+    <button class="love-btn" onclick="nextPage(5)">Next</button>
+  </div>
+  <!-- Page 5: Emoji Heart Constellation -->
+  <div class="page" id="page5">
+    <canvas id="constellation-canvas" width="360" height="340"></canvas>
+    <div class="constellation-msg">
+      Together, we make our own universe.<br>
+      <b>Every star, every heart, is us.</b>
+    </div>
+    <button class="love-btn" onclick="nextPage(6)">Next</button>
+  </div>
+  <!-- Page 6: Dreamy style image carousel -->
+  <div class="page" id="page6">
+    <svg class="heart" viewBox="0 0 32 29.6"><path fill="#fa4c8c" d="M23.6,0c-2.9,0-5.4,1.6-6.6,4C11.8,1.6,9.3,0,6.4,0C2.6,0,0,2.9,0,6.9c0,7.3,13.2,16.1,15,17.2c1.8-1.1,15-9.9,15-17.2C32,2.9,29.4,0,25.6,0z"/></svg>
+    <h1 style="margin-bottom:8px;">Dreaming of Us ✨</h1>
+    <div class="dreamy-carousel" id="dreamyCarousel"></div>
+    <div class="msg">
+      When I close my eyes, all I see is you and our beautiful story.<br>
+      <span style="color:#fa4c8c;font-weight:bold;">Forever and always, it's you.</span>
+    </div>
+    <div class="footer">— Your Dreamer 💌</div>
+  </div>
+  <script>
+    // You can paste your new images here, or let me know to use your previous set!
+    const images = [
+      { src: "https://i.ibb.co/1YcxbKYR/74022-DD7-8-A77-499-B-AD48-B434418-A07-DF.png", caption: "Our Teddy Moments" },
+      { src: "https://i.ibb.co/GQk1HSB8/IMG-3728.jpg", caption: "Sweet Selfie" },
+      { src: "https://i.ibb.co/hRDD3Z3w/IMG-3682.jpg", caption: "Smiles That Shine" },
+      { src: "https://i.ibb.co/TMnsCgGH/IMG-2265.jpg", caption: "Sunshine Vibes" },
+      { src: "https://i.ibb.co/1f1d3f1M/IMG-2259.jpg", caption: "Cute Faces" },
+      { src: "https://i.ibb.co/9Hg1wG5w/IMG-1840.jpg", caption: "Happy Days" },
+      { src: "https://i.ibb.co/CKYPXR36/061a4f7e-769b-4a75-9093-cf1f3b7dfc33.jpg", caption: "Hearts Together" },
+      { src: "https://i.ibb.co/j9vBYg11/IMG-8587.jpg", caption: "Adventures" },
+      { src: "https://i.ibb.co/ybbg2cq/IMG-8843.jpg", caption: "Silly Us" },
+      { src: "https://i.ibb.co/Df3djM7j/69866bed-8a0e-4f29-9d1c-1984055ea4c6.jpg", caption: "Crazy Times" }
+    ];
+    // --- MUSIC ---
+    let mainAudio;
+    function playMainAudio() {
+      if (!mainAudio) mainAudio = document.getElementById('mainAudio');
+      mainAudio.src = "https://files.catbox.moe/vuk5es.mp3";
+      mainAudio.volume = 0.7;
+      if (mainAudio.paused) mainAudio.play().catch(()=>{});
+    }
+    let played = false;
+    window.addEventListener('pointerdown', ()=>{
+      if(!played) { playMainAudio(); played = true; }
+    });
+
+    // --- PAGE SWITCHING ---
+    function nextPage(pageNum) {
+      document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+      document.getElementById('page'+pageNum).classList.add('active');
+      playMainAudio();
+      if(pageNum===2) startPhotoRain();
+      if(pageNum===3) showScrapbook();
+      if(pageNum===4) showCarousel();
+      if(pageNum===5) showConstellation();
+      if(pageNum===6) showDreamyCarousel();
+    }
+
+    // --- PAGE 2: PHOTO RAIN ---
+    let photoRainActive = false;
+    function startPhotoRain() {
+      photoRainActive = true;
+      let photos = [...images];
+      let drops = 18;
+      let dropped = 0;
+      function dropOne() {
+        if(!photoRainActive || dropped >= drops) return;
+        let idx = Math.floor(Math.random()*photos.length);
+        let img = photos[idx].src;
+        let x = 40 + Math.random()*(window.innerWidth-120);
+        let el = document.createElement('img');
+        el.src = img;
+        el.className = "fall-photo";
+        el.style.left = x+"px";
+        el.style.top = "-90px";
+        document.body.appendChild(el);
+        let t = 1800+Math.random()*700;
+        let drift = (Math.random()-0.5)*120;
+        el.animate([
+          {transform:"translateY(0px)", opacity: 1},
+          {transform:`translate(${drift}px,${window.innerHeight+60}px)`, opacity:0.1}
+        ],{duration:t,fill:"forwards"});
+        let caught = false;
+        el.onclick = function(ev) {
+          if(caught) return;
+          caught = true;
+          el.style.zIndex = 9999;
+          el.style.boxShadow = "0 4px 36px #fa4c8c77";
+          let heart = document.createElement('span');
+          heart.className = "fall-heart";
+          heart.style.left = (parseFloat(el.style.left)+10) + "px";
+          heart.style.top = (ev.clientY-30)+"px";
+          heart.textContent = "💗";
+          document.body.appendChild(heart);
+          heart.animate([
+            {transform:"scale(1.2)", opacity:1},
+            {transform:"translateY(-88px) scale(1.8)", opacity:0}
+          ],{duration:1200,fill:"forwards"});
+          setTimeout(()=>heart.remove(),1200);
+          setTimeout(()=>el.remove(),100);
+        };
+        setTimeout(()=>{el.remove();},t+200);
+        dropped++;
+        setTimeout(dropOne, 260+Math.random()*260);
+      }
+      for(let i=0;i<drops;i++) setTimeout(dropOne,300*i);
+      setTimeout(()=>photoRainActive=false, 4800);
+    }
+
+    // --- PAGE 3: SCRAPBOOK COLLAGE ---
+    function showScrapbook() {
+      const sb = document.getElementById('scrapbook');
+      sb.innerHTML = "";
+      images.forEach((img, idx) => {
+        let pic = document.createElement('div');
+        pic.className = 'scrap-pic';
+        pic.style.animationDelay = (0.2+idx*0.09)+'s';
+        let imgi = document.createElement('img');
+        imgi.src = img.src;
+        imgi.alt = img.caption;
+        pic.appendChild(imgi);
+        let caption = document.createElement('div');
+        caption.className = 'scrap-caption';
+        caption.textContent = img.caption;
+        pic.appendChild(caption);
+        pic.onclick = function(){
+          if(!pic.classList.contains('show-caption')){
+            pic.classList.add('show-caption');
+            sparkleBurst(pic);
+            setTimeout(()=>pic.classList.remove('show-caption'), 2000);
+          }
+        };
+        sb.appendChild(pic);
+      });
+    }
+    // Sparkle burst effect
+    function sparkleBurst(pic) {
+      let rect = pic.getBoundingClientRect();
+      for(let i=0;i<14;i++){
+        setTimeout(()=>{
+          let s = document.createElement('span');
+          s.textContent = "✨";
+          s.style.position = "fixed";
+          let theta = Math.PI*2*i/14;
+          let r = 38 + Math.random()*16;
+          s.style.left = (rect.left+rect.width/2 + Math.cos(theta)*r) + "px";
+          s.style.top  = (rect.top+rect.height/2 + Math.sin(theta)*r) + "px";
+          s.style.zIndex = 9999;
+          s.style.pointerEvents = "none";
+          s.style.opacity = "1";
+          s.style.fontSize = "1.2em";
+          document.body.appendChild(s);
+          s.animate([
+            {transform:"scale(0.7)"},
+            {transform:"scale(1.15)"},
+            {transform:"scale(0.4)", opacity:0}
+          ],{duration:900,fill:"forwards"});
+          setTimeout(()=>s.remove(),900);
+        },i*30);
+      }
+    }
+
+    // --- PAGE 4: POLAROID CAROUSEL ---
+    let carouselIdx = 0;
+    function showCarousel() {
+      carouselIdx = 0;
+      function setCarousel() {
+        let img = document.getElementById('carouselPic');
+        let cap = document.getElementById('carouselCaption');
+        img.src = images[carouselIdx].src;
+        img.alt = images[carouselIdx].caption;
+        cap.textContent = images[carouselIdx].caption;
+      }
+      setCarousel();
+      document.getElementById('carouselPrev').onclick = ()=>{
+        carouselIdx = (carouselIdx-1+images.length)%images.length;
+        setCarousel();
+      };
+      document.getElementById('carouselNext').onclick = ()=>{
+        carouselIdx = (carouselIdx+1)%images.length;
+        setCarousel();
+      };
+    }
+
+    // --- PAGE 5: CONSTELLATION OF US ---
+    function showConstellation() {
+      let canvas = document.getElementById('constellation-canvas');
+      let ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      // Randomly arrange points in a heart-constellation shape
+      let points = [];
+      let emojis = ["💖", "💗", "💝", "💕", "✨"];
+      for(let i=0; i<images.length; i++) {
+        let t = Math.PI - (Math.PI*2*i/images.length);
+        let x = 16*Math.pow(Math.sin(t),3);
+        let y = 13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t);
+        let px = 180 + x*8 + (Math.random()*18-9);
+        let py = 160 - y*8 + (Math.random()*14-7);
+        points.push({x:px, y:py, img:images[i].src});
+      }
+      // Draw lines
+      ctx.strokeStyle="#fa4c8c67";
+      ctx.lineWidth=2.5;
+      ctx.beginPath();
+      points.forEach((pt,i)=>{
+        if(i===0) ctx.moveTo(pt.x,pt.y);
+        else ctx.lineTo(pt.x,pt.y);
+      });
+      ctx.closePath();
+      ctx.stroke();
+      // Draw star images
+      points.forEach((pt,i)=>{
+        let image = new window.Image();
+        image.src = pt.img;
+        image.onload = ()=>{ ctx.save();
+          ctx.beginPath(); ctx.arc(pt.x, pt.y, 24, 0, Math.PI*2); ctx.closePath(); ctx.clip();
+          ctx.drawImage(image, pt.x-20, pt.y-20, 40, 40);
+          ctx.restore();
+          ctx.strokeStyle="#fff6"; ctx.lineWidth=3.5;
+          ctx.beginPath(); ctx.arc(pt.x, pt.y, 22, 0, Math.PI*2); ctx.stroke();
+        }
+        // Add emoji hearts
+        ctx.font = "1.2em serif";
+        ctx.fillText(emojis[i%emojis.length], pt.x-16, pt.y+38);
+      });
+    }
+
+    // --- PAGE 6: Dreamy Carousel ---
+    let dreamyIdx = 0, dreamyTimer = null;
+    function showDreamyCarousel() {
+      const dc = document.getElementById('dreamyCarousel');
+      dc.innerHTML = '';
+      images.forEach((imgObj, idx) => {
+        let img = document.createElement('img');
+        img.src = imgObj.src;
+        img.alt = imgObj.caption;
+        img.className = '';
+        dc.appendChild(img);
+      });
+      updateDreamyCarousel();
+      if (dreamyTimer) clearInterval(dreamyTimer);
+      dreamyTimer = setInterval(()=>{dreamyIdx = (dreamyIdx+1)%images.length; updateDreamyCarousel();}, 2100);
+    }
+    function updateDreamyCarousel() {
+      const imgs = Array.from(document.querySelectorAll('#dreamyCarousel img'));
+      imgs.forEach((img, idx)=>{
+        img.className = '';
+        let rel = (idx - dreamyIdx + images.length) % images.length;
+        if(rel === 0) img.classList.add('active');
+        else if(rel === 1) img.classList.add('right');
+        else if(rel === images.length-1) img.classList.add('left');
+        else if(rel === 2) img.classList.add('farr');
+        else if(rel === images.length-2) img.classList.add('far');
+        else img.style.opacity="0";
+      });
+    }
+
+    // Petals animation (always in background)
+    const petalSVG = `<svg width="32" height="32" viewBox="0 0 32 32"><path fill="#fa4c8c" d="M16,2 Q26,11 16,30 Q6,11 16,2 Z" opacity="0.7"/></svg>`;
+    function createPetal() {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      p.innerHTML = petalSVG;
+      p.style.left = Math.random()*100 + 'vw';
+      p.style.top = '-40px';
+      document.body.appendChild(p);
+      let duration = 5 + Math.random()*6;
+      let drift = (Math.random()-0.5)*80;
+      p.animate([
+        { transform: `translate(0,0) rotate(0deg)`, opacity: 0.7 },
+        { transform: `translate(${drift}px,90vh) rotate(${Math.random()*360}deg)`, opacity: 0.2 }
+      ], {duration: duration*1000, fill: 'forwards'});
+      setTimeout(()=>{p.remove();}, duration*1000);
+    }
+    setInterval(createPetal, 800);
+  </script>
+</body>
+</html>
